@@ -12,7 +12,17 @@ const uploadFile  = ( req = request, res = response ) => {
         });
     }
 
+    const validMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+
     const { files } = req.files;
+    const { mimetype } = files;
+
+    if (!validMimeTypes.includes(mimetype)) {
+        return res.status(400).json({
+            ok: false,
+            message: "Invalid file type."
+        });
+    }
     const uploadPath = path.join(__dirname, "../uploads", files.name);
     files.mv(uploadPath, (err) => {
         if (err) {
