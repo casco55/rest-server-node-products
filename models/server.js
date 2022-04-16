@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { dbConnection } = require('../database/config');
+const fileUpload = require('express-fileupload');
 
 class Server {
 
@@ -12,7 +13,8 @@ class Server {
             authPath: '/api/auth',
             usersPath: '/api/users',
             categoriesPath: '/api/categories',
-            productsPath: '/api/products'
+            productsPath: '/api/products',
+            uploadsPath: '/api/uploads'
         }
 
         // Conectar a ddbb
@@ -35,6 +37,12 @@ class Server {
         this.app.use(express.json());
         
         this.app.use( express.static('public'))
+
+        // carga de archivos
+        this.app.use( fileUpload({
+            useTempFiles: true,
+            tempFileDir: './tmp/'
+        }) );
     }
 
     routes() {
@@ -43,6 +51,7 @@ class Server {
         this.app.use(this.paths.categoriesPath, require('../routes/categories')); //ruta de categorias
         this.app.use(this.paths.productsPath, require('../routes/products')); //ruta de productos
         this.app.use(this.paths.searchPath, require('../routes/search')); //ruta de busqueda
+        this.app.use(this.paths.uploadsPath, require('../routes/uploads')); //ruta de subida de archivos
 
     }
 
