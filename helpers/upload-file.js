@@ -3,6 +3,7 @@ const path = require("path");
 
 const uploadImage = (image, dirName= '') => {
     return new Promise( (resolve, reject) => {
+        //probando push automático
         const validMimeTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
         const { mimetype } = image;
 
