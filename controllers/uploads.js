@@ -1,43 +1,27 @@
 const { request } = require("express");
 const { response } = require("express");
+const { uploadImage } = require("../helpers/upload-file");
 
-const path = require("path");
 
-const uploadFile  = ( req = request, res = response ) => {
-
-    if (!req.files || Object.keys(req.files).length === 0 || !req.files.files) {
+const uploadFile  = async ( req = request, res = response ) => {
+    const {image} = req.files;
+    if (!image || Object.keys(image).length === 0 || !image) {
         return res.status(400).json({
             ok: false,
             message: "No files were uploaded."
         });
     }
+    try {
+        const fullPath = await uploadImage(image, 'text');
+        res.status(200).json(fullPath);
 
-    const validMimeTypes = ["image/jpeg", "image/png", "image/gif"];
-
-    const { files } = req.files;
-    const { mimetype } = files;
-
-    if (!validMimeTypes.includes(mimetype)) {
-        return res.status(400).json({
+    } catch (err) {
+        res.status(400).json({
             ok: false,
-            message: "Invalid file type."
+            message: err
         });
     }
-    const uploadPath = path.join(__dirname, "../uploads", files.name);
-    files.mv(uploadPath, (err) => {
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                message: "Error al subir archivo",
-                err
-            });
-        }
-        res.status(200).json({
-            ok: true,
-            message: "Archivo subido correctamente",
-            uploadPath
-        });
-    });
+    
 }
 
 
